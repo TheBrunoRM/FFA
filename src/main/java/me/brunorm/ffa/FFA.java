@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -25,6 +26,7 @@ import me.brunorm.bukkitutils.Messager;
 public class FFA extends JavaPlugin {
 
     private static FFA plugin;
+    private static YamlConfiguration langConfig;
 
     private String packageName;
     private String serverPackageVersion;
@@ -41,6 +43,9 @@ public class FFA extends JavaPlugin {
         BukkitUtils.prefix = "[FFA] ";
         BukkitUtils.debugPrefix = "[FFA-DEBUG] ";
         BukkitUtils.debug = this.getConfig().getBoolean("debug");
+        ConfigurationUtils.plugin = plugin;
+
+        this.loadConfiguration();
 
         this.game = new FFAGame();
         this.game.setSpawnLocation(this.getLocationFromConfig("spawn"));
@@ -51,14 +56,7 @@ public class FFA extends JavaPlugin {
 
         this.getCommand("ffa").setExecutor(new FFACommand());
         Bukkit.getPluginManager().registerEvents(new FFAEvents(), this);
-        Bukkit.getConsoleSender().sendMessage("FFA has been enabled.");
-
-        if (!this.getDataFolder().exists())
-            this.getDataFolder().mkdir();
-
-        File configFile = new File(this.getDataFolder(), "config.yml");
-        if (!configFile.exists())
-            ConfigurationUtils.copyDefaultContentsToFile("config.yml", configFile);
+        BukkitUtils.sendMessage("FFA has been enabled.");
 
         this.scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
         if (this.scoreboard.getObjective("health") == null) {
@@ -66,10 +64,28 @@ public class FFA extends JavaPlugin {
             o.setDisplayName(Messager.color("&c&l❤"));
             o.setDisplaySlot(DisplaySlot.BELOW_NAME);
         }
-        if (this.scoreboard.getTeam("blue") == null) {
-            Team t = this.scoreboard.registerNewTeam("blue");
+        if (this.scoreboard.getTeam("ffa") == null) {
+            Team t = this.scoreboard.registerNewTeam("ffa");
             t.setPrefix(Messager.color("&c"));
         }
+    }
+
+    private void loadConfiguration() {
+        if (!this.getDataFolder().exists())
+            this.getDataFolder().mkdir();
+
+        File configFile = new File(this.getDataFolder(), "config.yml");
+        if (!configFile.exists())
+            ConfigurationUtils.copyDefaultContentsToFile("config.yml", configFile);
+
+        String locale = this.getConfig().getString("locale");
+        if (locale == null)
+            locale = "en";
+        File localeFile = new File(this.getDataFolder(), "lang/" + locale + ".yml");
+        if (!localeFile.exists())
+            ConfigurationUtils.copyDefaultContentsToFile("lang/en.yml", localeFile);
+        langConfig = YamlConfiguration.loadConfiguration(localeFile);
+        BukkitUtils.sendDebugMessage("Loaded configuration!");
     }
 
     private Location getLocationFromConfig(String string) {
@@ -88,9 +104,9 @@ public class FFA extends JavaPlugin {
 
     public void saveLocationConfig(String string, Location location) {
         final FileConfiguration config = this.getConfig();
-        config.set(string + ".x", location.getX());
-        config.set(string + ".y", location.getY());
-        config.set(string + ".z", location.getZ());
+        config.set(string + ".x", location.getBlockX() + 0.5);
+        config.set(string + ".y", location.getBlockY());
+        config.set(string + ".z", location.getBlockZ() + 0.5);
         config.set(string + ".world", location.getWorld().getName());
         try {
             config.save(new File(this.getDataFolder(), "config.yml"));
@@ -104,7 +120,7 @@ public class FFA extends JavaPlugin {
         FFAGame game = this.getGame();
         game.getBlockManager().restoreBlocks();
         game.kickAllPlayers();
-        Bukkit.getConsoleSender().sendMessage("FFA has been disabled.");
+        BukkitUtils.sendMessage("FFA has been disabled.");
     }
 
     public static FFA get() {
@@ -133,5 +149,9 @@ public class FFA extends JavaPlugin {
         meta.setDisplayName(Messager.color("&aPlay now!"));
         item.setItemMeta(meta);
         player.getInventory().setItem(1, item);
+    }
+
+    public YamlConfiguration getLanguageConfigurationFile() {
+        return langConfig;
     }
 }

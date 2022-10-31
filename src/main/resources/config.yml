@@ -5,3 +5,11 @@ spawn:
   y:
   z:
   world:
+
+mainlobby:
+  x:
+  y:
+  z:
+  world:
+
+debug: true

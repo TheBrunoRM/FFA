@@ -84,7 +84,7 @@ public class FFACommand implements CommandExecutor {
                         pdf.getVersion(), String.join(", ", pdf.getAuthors())));
                 break;
             default:
-                sender.sendMessage(Messager.color("&cUnknown arguments. &6Use /ffa help"));
+                sender.sendMessage(Messager.get("unknown_arguments"));
         }
         return false;
     }
