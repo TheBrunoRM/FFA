@@ -1,1 +1,5 @@
 unknown_arguments: "&cUnknown arguments. &6Use /ffa help"
+could_not_join: "&cCould not join the game."
+could_not_exit: "&cCould not exit the game."
+game_spawn_set: "&aGame spawn set to your location."
+main_lobby_set: "&aMain lobby set to your location."

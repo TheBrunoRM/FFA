@@ -45,7 +45,7 @@ public class FFACommand implements CommandExecutor {
                 if (!this.playerCheckWithMessage(player, sender))
                     return false;
                 if (!FFA.get().getGame().joinPlayer(player))
-                    player.sendMessage(Messager.color("&cCould not join."));
+                    Messager.send(player, "could_not_join");
                 break;
             case "leave":
             case "exit":
@@ -53,7 +53,7 @@ public class FFACommand implements CommandExecutor {
                 if (!this.playerCheckWithMessage(player, sender))
                     return false;
                 if (!FFA.get().getGame().leavePlayer(player))
-                    player.sendMessage(Messager.color("&cCould not exit."));
+                    Messager.send(player, "could_not_exit");
                 break;
             case "setmainlobby":
                 if (!this.playerCheckWithMessage(player, sender))
@@ -61,7 +61,7 @@ public class FFACommand implements CommandExecutor {
                 if (!this.permissionCheckWithMessage(player, "ffa.setmainlobby"))
                     return false;
                 FFA.get().saveLocationConfig("mainlobby", player.getLocation());
-                player.sendMessage(Messager.color("&aMain lobby set."));
+                Messager.send(player, "main_lobby_set");
                 break;
             case "setgamespawn":
                 if (!this.playerCheckWithMessage(player, sender))
@@ -69,7 +69,7 @@ public class FFACommand implements CommandExecutor {
                 if (!this.permissionCheckWithMessage(player, "ffa.setgamespawn"))
                     return false;
                 FFA.get().saveLocationConfig("spawn", player.getLocation());
-                player.sendMessage(Messager.color("&aGame spawn set."));
+                Messager.send(player, "game_spawn_set");
                 break;
             case "help":
                 for (final String s : this.helpLines)
@@ -84,7 +84,7 @@ public class FFACommand implements CommandExecutor {
                         pdf.getVersion(), String.join(", ", pdf.getAuthors())));
                 break;
             default:
-                sender.sendMessage(Messager.get("unknown_arguments"));
+                Messager.send(sender, "unknown_arguments");
         }
         return false;
     }

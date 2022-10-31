@@ -1,6 +1,7 @@
 package me.brunorm.bukkitutils;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import me.brunorm.ffa.FFA;
@@ -31,6 +32,10 @@ public class Messager {
         if (msg == null)
             msg = "";
         return formatMessage(msg, format);
+    }
+
+    public static void send(CommandSender sender, String string) {
+        sender.sendMessage(get(string));
     }
 
 }
