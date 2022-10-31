@@ -1,8 +1,0 @@
-main: me.brunorm.ffa.FFA
-name: FFA
-author: BrunoRM
-version: 0.0.1
-
-commands:
-  ffa:
-    description: Main FFA command.
