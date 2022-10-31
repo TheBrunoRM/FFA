@@ -116,7 +116,7 @@ public class BukkitReflection {
 		return Class.forName(this.nms + "." + name);
 	}
 
-	private Object getConnection(Player player) throws Exception {
+	public Object getConnection(Player player) throws Exception {
 		final Method getHandle = this.craftPlayerClass.getMethod("getHandle");
 		// CraftPlayer.getHandle();
 

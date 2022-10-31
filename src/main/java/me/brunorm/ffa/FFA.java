@@ -5,11 +5,20 @@ import java.io.IOException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 import me.brunorm.bukkitutils.BukkitReflection;
+import me.brunorm.bukkitutils.Messager;
 
 public class FFA extends JavaPlugin {
 
@@ -20,6 +29,7 @@ public class FFA extends JavaPlugin {
 	private BukkitReflection nmsHandler;
 
 	FFAGame game;
+	Scoreboard scoreboard;
 
 	@Override
 	public void onEnable() {
@@ -31,10 +41,21 @@ public class FFA extends JavaPlugin {
 		this.packageName = this.getServer().getClass().getPackage().getName();
 		this.serverPackageVersion = this.packageName.substring(this.packageName.lastIndexOf('.') + 1);
 		this.nmsHandler = new BukkitReflection();
-		
+
 		this.getCommand("ffa").setExecutor(new FFACommand());
 		Bukkit.getPluginManager().registerEvents(new FFAEvents(), this);
 		Bukkit.getConsoleSender().sendMessage("FFA has been enabled.");
+
+		this.scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+		if (this.scoreboard.getObjective("health") == null) {
+			Objective o = this.scoreboard.registerNewObjective("health", "health");
+			o.setDisplayName(Messager.color("&c&l❤"));
+			o.setDisplaySlot(DisplaySlot.BELOW_NAME);
+		}
+		if (this.scoreboard.getTeam("blue") == null) {
+			Team t = this.scoreboard.registerNewTeam("blue");
+			t.setPrefix(Messager.color("&c"));
+		}
 	}
 
 	private Location getLocationFromConfig(String string) {
@@ -63,10 +84,12 @@ public class FFA extends JavaPlugin {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public void onDisable() {
-		for(FFAPlayer p : getGame().getPlayers()) getGame().leavePlayer(p);
+		FFAGame game = this.getGame();
+		game.getBlockManager().restoreBlocks();
+		game.kickAllPlayers();
 		Bukkit.getConsoleSender().sendMessage("FFA has been disabled.");
 	}
 
@@ -84,5 +107,17 @@ public class FFA extends JavaPlugin {
 
 	public FFAGame getGame() {
 		return this.game;
+	}
+
+	public Scoreboard getScoreboard() {
+		return this.scoreboard;
+	}
+
+	public void lobby(Player player) {
+		ItemStack item = new ItemStack(Material.EMERALD);
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName(Messager.color("&aPlay now!"));
+		item.setItemMeta(meta);
+		player.getInventory().setItem(1, item);
 	}
 }

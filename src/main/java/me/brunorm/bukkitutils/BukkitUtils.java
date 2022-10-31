@@ -56,7 +56,7 @@ public class BukkitUtils {
 		player.setAllowFlight(false);
 		if (player.getFireTicks() > 0)
 			player.setFireTicks(0);
-	
+		
 		// clear potion effects
 		for (final PotionEffect e : player.getActivePotionEffects()) {
 			player.removePotionEffect(e.getType());
